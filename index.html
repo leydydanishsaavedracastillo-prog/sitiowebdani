@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EsSalud - Centro de Salud</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --es-blue: #1a56c4;
+            --es-blue-light: #e8f0fc;
+            --es-red: #e53e2e;
+            --es-green: #22a85a;
+            --es-amber: #f59e0b;
+            --sk-color: #e0ddd8;
+            --sk-color-light: #f0ede8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .phone-frame {
+            width: 100%;
+            max-width: 380px;
+            height: 800px;
+            border-radius: 40px;
+            border: 8px solid #333;
+            overflow: hidden;
+            margin: 20px auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: white;
+            position: relative;
+        }
+
+        .screen-container {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        /* SKELETON STYLES */
+        .skeleton-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--sk-color-light);
+        }
+
+        .sk-topbar {
+            background: var(--sk-color);
+            height: 52px;
+            width: 100%;
+        }
+
+        .sk-body {
+            padding: 16px;
+        }
+
+        .sk-pulse {
+            background: linear-gradient(90deg, var(--sk-color) 25%, var(--sk-color-light) 50%, var(--sk-color) 75%);
+            background-size: 400% 100%;
+            animation: shimmer 1.4s ease infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .sk-avatar { width: 72px; height: 72px; border-radius: 50%; }
+        .sk-line { height: 14px; margin-bottom: 8px; }
+        .sk-card { height: 90px; margin-bottom: 10px; border-radius: 12px; }
+        .sk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .sk-menu { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .sk-menu-item { height: 50px; border-radius: 12px; }
+        .sk-appt { height: 140px; margin-bottom: 16px; border-radius: 12px; }
+        .sk-section { height: 200px; margin-bottom: 16px; border-radius: 12px; }
+
+        /* UI REAL STYLES */
+        .real-screen {
+            width: 100%;
+            min-height: 100%;
+            background: #f0f2f5;
+        }
+
+        .topbar {
+            background: var(--es-blue);
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 14px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--es-red);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .body {
+            padding: 14px;
+            padding-bottom: 80px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .greeting-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-circle {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: var(--es-blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 28px;
+            color: var(--es-blue);
+        }
+
+        .greeting-text h2 {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--es-blue);
+            margin-bottom: 2px;
+        }
+
+        .greeting-text p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .quick-card {
+            background: white;
+            border-radius: 14px;
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        .quick-card:active {
+            transform: scale(0.97);
+        }
+
+        .quick-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--es-blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--es-blue);
+            font-size: 20px;
+        }
+
+        .quick-card span {
+            font-size: 11px;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-header h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ver-todas {
+            font-size: 12px;
+            color: var(--es-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .confirm-banner {
+            background: #e8f7ef;
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .confirm-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--es-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .confirm-banner p {
+            font-size: 12px;
+            color: #1a6b3a;
+            line-height: 1.4;
+        }
+
+        .confirm-banner strong {
+            font-weight: 600;
+        }
+
+        .appt-badge {
+            display: inline-block;
+            background: var(--es-blue-light);
+            color: var(--es-blue);
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .appt-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .appt-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--es-blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--es-blue);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .appt-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .appt-info p {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .appt-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 10px 0;
+            border-top: 0.5px solid #e0e0e0;
+            border-bottom: 0.5px solid #e0e0e0;
+        }
+
+        .appt-meta-item {
+            text-align: center;
+        }
+
+        .appt-meta-item span {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .appt-tip {
+            background: #f0f2f5;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .emergency-btn {
+            position: fixed;
+            bottom: 14px;
+            left: 14px;
+            right: 14px;
+            background: var(--es-red);
+            color: white;
+            border: none;
+            border-radius: 26px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.1s;
+            z-index: 50;
+        }
+
+        .emergency-btn:active {
+            transform: scale(0.95);
+        }
+
+        .emergency-btn small {
+            font-size: 10px;
+            font-weight: 400;
+            display: block;
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 380px;
+            height: 60px;
+            background: white;
+            border-top: 0.5px solid #e0e0e0;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            z-index: 200;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--es-blue);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* PROFILE PAGE */
+        .profile-header {
+            background: var(--es-blue);
+            color: white;
+            padding: 20px 14px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--es-blue-light);
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: var(--es-blue);
+        }
+
+        .profile-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .profile-info {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 12px;
+        }
+
+        .profile-badges {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .profile-section {
+            padding: 14px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            margin-top: 14px;
+        }
+
+        .profile-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .profile-item:hover {
+            background: #f5f5f5;
+        }
+
+        .profile-item-label {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .profile-item-value {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* NOTIFICATIONS */
+        .notif-list {
+            padding: 14px;
+        }
+
+        .notif-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 12px;
+            border-left: 4px solid var(--es-blue);
+        }
+
+        .notif-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--es-blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--es-blue);
+            flex-shrink: 0;
+            font-size: 18px;
+        }
+
+        .notif-content h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .notif-content p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .notif-time {
+            font-size: 10px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* SPECIALTIES */
+        .search-box {
+            padding: 14px;
+            background: white;
+            margin-bottom: 14px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 0.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .specialty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 14px;
+        }
+
+        .specialty-item {
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .specialty-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .specialty-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .specialty-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        /* SCHEDULE PAGE */
+        .booking-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 14px;
+            background: white;
+            margin-bottom: 14px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border: 0.5px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--es-blue);
+            color: white;
+            border-color: var(--es-blue);
+        }
+
+        /* PHARMACY */
+        .cart-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            background: white;
+            margin-bottom: 14px;
+        }
+
+        .cart-count {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .cart-total {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--es-blue);
+        }
+
+        .medicine-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .medicine-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: var(--es-blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--es-blue);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .medicine-details {
+            flex: 1;
+        }
+
+        .medicine-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .medicine-info {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .medicine-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--es-blue);
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border: 0.5px solid #e0e0e0;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-frame">
+    <div class="screen-container" id="screenContainer">
+        <!-- HOME PAGE -->
+        <div class="page" data-page="home">
+            <!-- SKELETON -->
+            <div class="skeleton-screen" id="homeSkeleton">
+                <div class="sk-topbar sk-pulse"></div>
+                <div class="sk-body">
+                    <div style="display: flex; gap: 14px; margin-bottom: 20px;">
+                        <div class="sk-avatar sk-pulse"></div>
+                        <div style="flex: 1;">
+                            <div class="sk-line sk-pulse" style="width: 70%;"></div>
+                            <div class="sk-line sk-pulse" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="sk-grid">
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                    </div>
+                    <div class="sk-appt sk-pulse"></div>
+                    <div class="sk-appt sk-pulse"></div>
+                </div>
+            </div>
+
+            <!-- REAL UI -->
+            <div class="real-screen" id="homeUI" style="display: none;">
+                <div class="topbar">
+                    <button class="icon-btn"><i class="fas fa-bars"></i></button>
+                    <div class="topbar-title"><i class="fas fa-heart"></i> EsSalud</div>
+                    <button class="icon-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notif-badge">2</span>
+                    </button>
+                </div>
+
+                <div class="body" style="padding-bottom: 100px;">
+                    <div class="card greeting-row">
+                        <div class="avatar-circle">👩</div>
+                        <div class="greeting-text">
+                            <h2>¡Hola, Abigail Atoche!</h2>
+                            <p>Bienvenida al Centro de Salud</p>
+                            <p>Tu salud es nuestra prioridad ❤️</p>
+                        </div>
+                    </div>
+
+                    <div class="quick-grid">
+                        <div class="quick-card" onclick="navigateTo('specialties')">
+                            <div class="quick-icon"><i class="fas fa-stethoscope"></i></div>
+                            <span>Especialidades</span>
+                        </div>
+                        <div class="quick-card" onclick="navigateTo('schedule')">
+                            <div class="quick-icon"><i class="fas fa-calendar"></i></div>
+                            <span>Agendar cita</span>
+                        </div>
+                        <div class="quick-card">
+                            <div class="quick-icon"><i class="fas fa-clipboard"></i></div>
+                            <span>Historial médico</span>
+                        </div>
+                        <div class="quick-card" onclick="navigateTo('pharmacy')">
+                            <div class="quick-icon"><i class="fas fa-pills"></i></div>
+                            <span>Farmacia</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fas fa-calendar-check" style="color: var(--es-blue);"></i> Tu próxima cita</h3>
+                            <span class="ver-todas">Ver todas <i class="fas fa-chevron-right"></i></span>
+                        </div>
+
+                        <div class="confirm-banner">
+                            <div class="confirm-icon"><i class="fas fa-check"></i></div>
+                            <div>
+                                <p><strong>¡Cita confirmada!</strong></p>
+                                <p>Hemos enviado la confirmación a tu correo electrónico.</p>
+                            </div>
+                        </div>
+
+                        <div style="padding-top: 12px; border-top: 0.5px solid #e0e0e0;">
+                            <div class="appt-badge">Próxima cita</div>
+                            <div class="appt-row">
+                                <div class="appt-icon"><i class="fas fa-heartbeat"></i></div>
+                                <div class="appt-info">
+                                    <h4>Medicina General</h4>
+                                    <p>Dra. María Fernanda Rojas</p>
+                                </div>
+                            </div>
+                            <div class="appt-meta">
+                                <div class="appt-meta-item">
+                                    <i class="fas fa-calendar" style="color: var(--es-blue); margin-bottom: 4px; display: block;"></i>
+                                    <span>24 mayo 2024</span>
+                                </div>
+                                <div class="appt-meta-item">
+                                    <i class="fas fa-clock" style="color: var(--es-blue); margin-bottom: 4px; display: block;"></i>
+                                    <span>10:30 a.m.</span>
+                                </div>
+                                <div class="appt-meta-item">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--es-blue); margin-bottom: 4px; display: block;"></i>
+                                    <span>C.S. San Borja</span>
+                                </div>
+                            </div>
+                            <div class="appt-tip">
+                                <i class="fas fa-info-circle"></i>
+                                Llega 15 minutos antes de tu cita.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROFILE PAGE -->
+        <div class="page hidden" data-page="profile">
+            <div class="skeleton-screen" id="profileSkeleton">
+                <div class="sk-topbar sk-pulse"></div>
+                <div class="sk-body" style="margin-top: 40px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 12px; background: var(--sk-color);" class="sk-pulse"></div>
+                        <div class="sk-line sk-pulse" style="width: 60%; margin: 0 auto 8px;"></div>
+                        <div class="sk-line sk-pulse" style="width: 50%; margin: 0 auto;"></div>
+                    </div>
+                    <div class="sk-menu">
+                        <div class="sk-menu-item sk-pulse"></div>
+                        <div class="sk-menu-item sk-pulse"></div>
+                        <div class="sk-menu-item sk-pulse"></div>
+                        <div class="sk-menu-item sk-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="real-screen" id="profileUI" style="display: none;">
+                <div class="topbar">
+                    <button class="icon-btn" onclick="navigateTo('home')"><i class="fas fa-chevron-left"></i></button>
+                    <div class="topbar-title">Mi Perfil</div>
+                    <button class="icon-btn"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+
+                <div class="profile-header">
+                    <div class="profile-avatar">👩</div>
+                    <div class="profile-name">Abigail Atoche</div>
+                    <div class="profile-info">DNI: 73541267</div>
+                    <div class="profile-info">abigail.atoche@gmail.com</div>
+                    <div class="profile-badges">
+                        <div class="badge"><i class="fas fa-check-circle" style="margin-right: 4px;"></i> Asegurado activo</div>
+                        <div class="badge"><i class="fas fa-circle" style="margin-right: 4px;"></i> Régimen Regular</div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-title">Datos de Afiliación</div>
+                    <div class="profile-item">
+                        <div>
+                            <div class="profile-item-label">N° Afiliado</div>
+                            <div class="profile-item-value">08-4231-76</div>
+                        </div>
+                    </div>
+                    <div class="profile-item">
+                        <div>
+                            <div class="profile-item-label">Fecha Afiliación</div>
+                            <div class="profile-item-value">12 ene 2018</div>
+                        </div>
+                    </div>
+                    <div class="profile-item">
+                        <div>
+                            <div class="profile-item-label">Centro Base</div>
+                            <div class="profile-item-value">C.S. San Borja</div>
+                        </div>
+                    </div>
+                    <div class="profile-item">
+                        <div>
+                            <div class="profile-item-label">Teléfono</div>
+                            <div class="profile-item-value">+51 987 654 321</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-title">Mi Cuenta</div>
+                    <div class="profile-item" onclick="alert('Editar perfil')">
+                        <div>
+                            <div class="profile-item-label"><i class="fas fa-user-circle" style="margin-right: 8px; color: var(--es-blue);"></i> Mi perfil</div>
+                            <div class="profile-item-value">Visualiza tu información personal</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color: #999;"></i>
+                    </div>
+                    <div class="profile-item" onclick="alert('Editar datos')">
+                        <div>
+                            <div class="profile-item-label"><i class="fas fa-edit" style="margin-right: 8px; color: var(--es-blue);"></i> Editar mis datos</div>
+                            <div class="profile-item-value">Actualiza tu información personal</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color: #999;"></i>
+                    </div>
+                    <div class="profile-item" onclick="alert('Configuración')">
+                        <div>
+                            <div class="profile-item-label"><i class="fas fa-cog" style="margin-right: 8px; color: var(--es-blue);"></i> Configuración</div>
+                            <div class="profile-item-value">Gestiona tus preferencias</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color: #999;"></i>
+                    </div>
+                    <div class="profile-item" onclick="alert('¿Cerrar sesión?')" style="border-left: 4px solid var(--es-red);">
+                        <div>
+                            <div class="profile-item-label" style="color: var(--es-red);"><i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Cerrar sesión</div>
+                            <div class="profile-item-value">Cierra tu sesión de forma segura</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="color: #999;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS PAGE -->
+        <div class="page hidden" data-page="notifications">
+            <div class="skeleton-screen" id="notificationsSkeleton">
+                <div class="sk-topbar sk-pulse"></div>
+                <div class="sk-body">
+                    <div class="sk-section sk-pulse"></div>
+                    <div class="sk-section sk-pulse"></div>
+                    <div class="sk-section sk-pulse"></div>
+                </div>
+            </div>
+
+            <div class="real-screen" id="notificationsUI" style="display: none;">
+                <div class="topbar">
+                    <button class="icon-btn" onclick="navigateTo('home')"><i class="fas fa-chevron-left"></i></button>
+                    <div class="topbar-title">Notificaciones</div>
+                    <button class="icon-btn"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+
+                <div class="notif-list" style="padding-bottom: 100px;">
+                    <div class="notif-item">
+                        <div class="notif-icon"><i class="fas fa-flask"></i></div>
+                        <div style="flex: 1;">
+                            <div class="notif-content">
+                                <h4>Resultado de análisis clínico disponible</h4>
+                                <p>Tus resultados de laboratorio ya están disponibles para su revisión.</p>
+                                <div class="notif-time">Hace 15 min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notif-item" style="border-left-color: var(--es-amber);">
+                        <div class="notif-icon" style="background: #fef3c7; color: var(--es-amber);"><i class="fas fa-bell"></i></div>
+                        <div style="flex: 1;">
+                            <div class="notif-content">
+                                <h4>Recordatorio de cita</h4>
+                                <p>Tienes una cita programada con Cardiología mañana a las 10:30 a.m.</p>
+                                <div class="notif-time">Hace 1 h</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notif-item" style="border-left-color: var(--es-green);">
+                        <div class="notif-icon" style="background: #dbeafe; color: var(--es-green);"><i class="fas fa-prescription-bottle"></i></div>
+                        <div style="flex: 1;">
+                            <div class="notif-content">
+                                <h4>Renovar medicamentos</h4>
+                                <p>Es momento de renovar tus medicamentos. Aquí tienes tus próximos a vencer.</p>
+                                <div class="notif-time">Hace 2 h</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notif-item" style="border-left-color: var(--es-blue);">
+                        <div class="notif-icon"><i class="fas fa-file-medical"></i></div>
+                        <div style="flex: 1;">
+                            <div class="notif-content">
+                                <h4>Tu historial fue actualizado</h4>
+                                <p>Se agregó un nuevo registro médico a tu historial clínico.</p>
+                                <div class="notif-time">Hace 3 h</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SPECIALTIES PAGE -->
+        <div class="page hidden" data-page="specialties">
+            <div class="skeleton-screen" id="specialtiesSkeleton">
+                <div class="sk-topbar sk-pulse"></div>
+                <div class="sk-body">
+                    <div class="sk-line sk-pulse" style="margin-bottom: 16px;"></div>
+                    <div class="sk-grid">
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                        <div class="sk-card sk-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="real-screen" id="specialtiesUI" style="display: none;">
+                <div class="topbar">
+                    <button class="icon-btn" onclick="navigateTo('home')"><i class="fas fa-chevron-left"></i></button>
+                    <div class="topbar-title">Especialidades</div>
+                    <button class="icon-btn"><i class="fas fa-search"></i></button>
+                </div>
+
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Buscar especialidad...">
+                </div>
+
+                <div class="specialty-grid" style="padding-bottom: 100px;">
+                    <div class="specialty-item">
+                        <div class="specialty-icon">🦷</div>
+                        <div class="specialty-name">Odontología</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">👩‍⚕️</div>
+                        <div class="specialty-name">Ginecología</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">🩺</div>
+                        <div class="specialty-name">Medicina General</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">❤️</div>
+                        <div class="specialty-name">Cardiología</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">🧠</div>
+                        <div class="specialty-name">Neurología</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">👁️</div>
+                        <div class="specialty-name">Oftalmología</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">🦴</div>
+                        <div class="specialty-name">Traumatología</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">🫁</div>
+                        <div class="specialty-name">Neumología</div>
+                    </div>
+                    <div class="specialty-item">
+                        <div class="specialty-icon">💊</div>
+                        <div class="specialty-name">Farmacología</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCHEDULE PAGE -->
+        <div class="page hidden" data-page="schedule">
+            <div class="skeleton-screen" id="scheduleSkeleton">
+                <div class="sk-topbar sk-pulse"></div>
+                <div class="sk-body">
+                    <div class="sk-line sk-pulse" style="margin-bottom: 20px;"></div>
+                    <div class="sk-appt sk-pulse" style="margin-bottom: 16px;"></div>
+                    <div class="sk-appt sk-pulse"></div>
+                </div>
+            </div>
+
+            <div class="real-screen" id="scheduleUI" style="display: none;">
+                <div class="topbar">
+                    <button class="icon-btn" onclick="navigateTo('home')"><i class="fas fa-chevron-left"></i></button>
+                    <div class="topbar-title">Agendar Cita</div>
+                    <button class="icon-btn"><i class="fas fa-ellipsis-v"></i></button>
+                </div>
+
+                <div class="body" style="padding-bottom: 100px;">
+                    <div class="booking-tabs">
+                        <button class="tab-btn active">Especialidad</button>
+                        <button class="tab-btn">Fecha y hora</button>
+                        <button class="tab-btn">Confirmación</button>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #333;">
+                            <i class="fas fa-heart" style="color: var(--es-red); margin-right: 8px;"></i>
+                            Especialidad seleccionada
+                        </h3>
+                        <p style="font-size: 13px; color: var(--es-blue); font-weight: 600; margin-bottom: 12px;">GINECOLOGÍA</p>
+                        <p style="font-size: 12px; color: #666; margin-bottom: 14px;">Cambiar especialidad 🔗</p>
+
+                        <h4 style="font-size: 12px; font-weight: 600; color: #999; text-transform: uppercase; margin-bottom: 10px;">Doctora de turno</h4>
+                        <div style="display: flex; gap: 12px; align-items: center; background: #f5f5f5; padding: 12px; border-radius: 10px;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--es-blue-light); display: flex; align-items: center; justify-content: center; color: var(--es-blue); font-size: 24px;">👩‍⚕️</div>
+                            <div>
+                                <p style="font-size: 13px; font-weight: 600; color: #333; margin-bottom: 2px;">Dra. BRUNELLA ORTIZ</p>
+                                <p style="font-size: 11px; color: #999;">Ginecología y Obstetricia</p>
+                            </div>
+                            <i class="fas fa-info-circle" style="color: var(--es-blue); margin-left: auto;"></i>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #333;">Selecciona la fecha</h3>
+                        <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; color: var(--es-blue); font-weight: 600; cursor: pointer;">
+                            📅 Junio 2025
+                        </div>
+                    </div>
+
+                    <button style="width: 100%; background: var(--es-blue); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 100px;">
+                        <i class="fas fa-calendar"></i> Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHARMACY PAGE -->
+        <div class="page hidden" data-page="pharmacy">
+            <div class="skeleton-screen" id="pharmacySkeleton">
+                <div class="sk-topbar sk-pulse"></div>
+                <div class="sk-body">
+                    <div class="sk-line sk-pulse" style="margin-bottom: 20px;"></div>
+                    <div class="sk-menu">
+                        <div class="sk-menu-item sk-pulse"></div>
+                        <div class="sk-menu-item sk-pulse"></div>
+                        <div class="sk-menu-item sk-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="real-screen" id="pharmacyUI" style="display: none;">
+                <div class="topbar">
+                    <button class="icon-btn" onclick="navigateTo('home')"><i class="fas fa-chevron-left"></i></button>
+                    <div class="topbar-title">Farmacia</div>
+                    <button class="icon-btn" style="position: relative;">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span style="position: absolute; top: -4px; right: -4px; background: var(--es-red); color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; display: flex; align-items: center; justify-content: center;">2</span>
+                    </button>
+                </div>
+
+                <div class="cart-summary">
+                    <div>
+                        <div class="cart-count"><i class="fas fa-shopping-cart"></i> 2 productos</div>
+                    </div>
+                    <div class="cart-total">S/ 18.30</div>
+                </div>
+
+                <div class="booking-tabs" style="margin: 0 14px 14px;">
+                    <button class="tab-btn active">Todos</button>
+                    <button class="tab-btn">Receta</button>
+                    <button class="tab-btn">Genéricos</button>
+                    <button class="tab-btn">Vitaminas</button>
+                </div>
+
+                <div style="padding: 0 14px 100px; padding-bottom: 100px;">
+                    <div class="medicine-item">
+                        <div class="medicine-icon">💊</div>
+                        <div class="medicine-details">
+                            <div class="medicine-name">Desametasona</div>
+                            <div class="medicine-info">4 mg / Tabletas</div>
+                            <div style="font-size: 10px; color: var(--es-blue); margin-top: 2px;">Genérico</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="medicine-price">S/ 12.50</div>
+                            <div class="quantity-control">
+                                <button class="qty-btn">−</button>
+                                <span style="width: 20px; text-align: center; font-size: 12px;">1</span>
+                                <button class="qty-btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="medicine-item">
+                        <div class="medicine-icon">💊</div>
+                        <div class="medicine-details">
+                            <div class="medicine-name">Inalapril</div>
+                            <div class="medicine-info">10 mg / Tabletas</div>
+                            <div style="font-size: 10px; color: var(--es-blue); margin-top: 2px;">Genérico</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="medicine-price">S/ 5.80</div>
+                            <div class="quantity-control">
+                                <button class="qty-btn">−</button>
+                                <span style="width: 20px; text-align: center; font-size: 12px;">1</span>
+                                <button class="qty-btn">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 14px;">
+                        <button style="flex: 1; padding: 10px; border: 1px solid #e0e0e0; background: white; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--es-blue);">
+                            YAPE
+                        </button>
+                        <button style="flex: 1; padding: 10px; border: 1px solid #e0e0e0; background: white; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--es-blue);">
+                            Efectivo
+                        </button>
+                        <button style="flex: 1; padding: 10px; border: 1px solid #e0e0e0; background: white; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--es-blue);">
+                            Tarjeta
+                        </button>
+                    </div>
+
+                    <button style="width: 100%; background: var(--es-blue); color: white; border: none; padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 14px;">
+                        <i class="fas fa-lock"></i> Comprar ahora
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVIGATION BAR -->
+    <div class="nav-bar">
+        <button class="nav-item active" onclick="navigateTo('home')">
+            <i class="fas fa-home"></i>
+            <span>Inicio</span>
+        </button>
+        <button class="nav-item" onclick="navigateTo('notifications')">
+            <i class="fas fa-bell"></i>
+            <span>Citas</span>
+        </button>
+        <button class="nav-item" onclick="navigateTo('pharmacy')">
+            <i class="fas fa-file"></i>
+            <span>Historial</span>
+        </button>
+        <button class="nav-item" onclick="navigateTo('pharmacy')">
+            <i class="fas fa-pills"></i>
+            <span>Recetas</span>
+        </button>
+        <button class="nav-item" onclick="navigateTo('profile')">
+            <i class="fas fa-user"></i>
+            <span>Perfil</span>
+        </button>
+    </div>
+
+    <!-- EMERGENCY BUTTON -->
+    <button class="emergency-btn" onclick="alert('Llamando a emergencias...')">
+        <i class="fas fa-phone-alt"></i>
+        <div style="text-align: left;">
+            EMERGENCIA
+            <small>Atención inmediata 24/7</small>
+        </div>
+    </button>
+</div>
+
+<script>
+    const SKELETON_DELAY = 2200;
+
+    function navigateTo(pageId) {
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        pages.forEach(page => page.classList.add('hidden'));
+        navItems.forEach(item => item.classList.remove('active'));
+
+        const targetPage = document.querySelector(`[data-page="${pageId}"]`);
+        targetPage.classList.remove('hidden');
+
+        const targetNavItem = Array.from(navItems).find(item => 
+            item.textContent.toLowerCase().includes(pageId === 'home' ? 'inicio' : pageId)
+        );
+        if (targetNavItem) targetNavItem.classList.add('active');
+
+        loadPage(pageId);
+    }
+
+    function loadPage(pageId) {
+        const skeleton = document.getElementById(`${pageId}Skeleton`);
+        const ui = document.getElementById(`${pageId}UI`);
+
+        if (!skeleton || !ui) return;
+
+        skeleton.style.display = 'block';
+        ui.style.display = 'none';
+
+        setTimeout(() => {
+            skeleton.classList.add('fade-out');
+            setTimeout(() => {
+                skeleton.style.display = 'none';
+                ui.style.display = 'block';
+                ui.classList.add('fade-in');
+            }, 300);
+        }, SKELETON_DELAY);
+    }
+
+    window.addEventListener('load', () => {
+        loadPage('home');
+    });
+</script>
+
+</body>
+</html>
